@@ -1,0 +1,13 @@
+<!DOCTYPE RCC>
+<RCC version="1.0">
+    <qresource prefix="/">
+       <file>images/iconfinder_Whatsapp_3721678.icns</file>
+       <file>images/iconfinder_Whatsapp_3721678.ico</file>
+       <file>images/iconfinder_Whatsapp_3721678.svg</file>
+       <file>images/iconfinder_Whatsapp_3721678.png</file>
+       <file>images/iconfinder_Whatsapp_3721678_grayscale.png</file>
+       <file>images/iconfinder_Whatsapp_3721678_64.png</file>
+       <file>images/iconfinder_Whatsapp_3721678_128.png</file>
+       <file>images/iconfinder_Whatsapp_3721678_256.png</file>
+    </qresource>
+</RCC>

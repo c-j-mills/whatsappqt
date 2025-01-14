@@ -1,0 +1,21 @@
+image: alpine
+
+before_script:
+- apk add flatpak flatpak-builder
+- flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+- flatpak install --assumeyes flathub org.kde.Platform//5.15 org.kde.Sdk//5.15 io.qt.qtwebengine.BaseApp//5.15
+
+build:
+  stage: build
+  rules:
+  - if: '$CI_COMMIT_BRANCH'
+    when: on_success
+  script:
+  - flatpak-builder build-dir io.bit3.WhatsAppQT.yml
+
+#publish:
+#  stage: deploy
+#  - if: '$CI_COMMIT_TAG'
+#    when: on_success
+#  script:
+#  - flatpak-builder --repo=repo --force-clean build-dir io.bit3.WhatsAppQT.yml
