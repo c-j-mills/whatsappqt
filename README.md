@@ -1,64 +1,84 @@
 # WhatsAppQT
 
-Unofficial WhatsApp Web Desktop Client.
 
-![WhatsAppQt Main Window](images/screenshot-main.png "Main Window")
+## Description
 
-Attribution: Icon by Teguh Sulistio https://www.iconfinder.com/VISOEALE
+Unofficial WhatsApp Web Desktop Client using Qt 6.8 Framework.
 
-## Flatpak config
+Purpose of the project is to provide a simple yet integrated Qt-based WhatsApp client into
+(primarily) the KDE Plasma desktop.
 
-The flatpak config file can be found in the [flathub/io.bit3.WhatsAppQT](https://github.com/flathub/io.bit3.WhatsAppQT/blob/master/io.bit3.WhatsAppQT.yml) repository.
 
-## Tweaks
+## TODO
 
-### Allow uploading files from everywhere in /home/user
+- [ ] Remove deprecation warnings.
+- [ ] Create a script to build a toolbx under Fedora Linux.
+- [ ] Upload to Flathub
+- [ ] Notifications
+- [ ] Menu
 
-Per default the app is only allowed to access the "downloads" folder, to make it possible to download files and upload from "downloads" folder.
 
-That may be too restrictive for most. To grant access to your home directory, override filesystem access with:
+## Installation
 
-    flatpak override --filesystem=home io.bit3.WhatsAppQT
-
-## Local development
-
-It is recommend to use the Flatpak *user mode* installation method. In this mode the packages are installed into user space, without affecting the system.
-
-Add Flathub remote:
-
-    flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
-
-Install required packages:
-
-    flatpak install --user --assumeyes flathub org.kde.Platform//5.15 org.kde.Sdk//5.15 io.qt.qtwebengine.BaseApp//5.15
-
-### flatpak system mode
-
-Alternatively, the Flatpak *system mode* can be used.
-
-    sudo flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
-
-### qt5 packages
-
-For local code completion / assistance. Not needed for compiling!
-
-    sudo dnf install qt5-qtwebengine-devel
-
-NOTE: In the Clion IDE it is necessary to define the `CMAKE_PREFIX_PATH` in the _CMake options_
-      (_Settings - Build, Execution, Development - CMake_), e.g. `-DCMAKE_PREFIX_PATH=/usr/lib64/qt5` on fedora.
-      (link:https://www.jetbrains.com/help/clion/qt-tutorial.html#configure-cmakelists[ref])
-
-### Building and running the application
-
-Navigate to the correct directory:
+Download the Git repository and navigate to the correct directory:
 
     cd /path/to/whatsappqt
 
-Build the applications:
+To set up your Fedora system, use the included Toolbx script.
 
-    flatpak-builder --user --force-clean --install-deps-from=flathub build-dir io.bit3.WhatsAppQT.yml
+    ./toolbx_whatsappqt.sh
+
+> [!NOTE]
+> To build the application outside of Fedora Linux, read the script and follow the same steps in
+> your system.
+
+The build requires dependencies from [Flathub](flathub.org) there ensure it has been added as a
+remote.
+
+    flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+
+Build the application, with or without making edits:
+
+    flatpak-builder --user \
+        --force-clean \
+        --install-deps-from=flathub \
+        --install \
+        build-dir io.bit3.WhatsAppQT.yml
+
+> [!IMPORTANT]
+> This command installs the application in your Flatpak *user scope* only. Other users cannot use
+> the application.
 
 Run the application:
 
-    flatpak-builder --run build-dir io.bit3.WhatsAppQT.yml WhatsAppQT
+    flatpak run io.bit3.WhatsAppQT
 
+## Usage
+
+The application is an encapsulated webpage pointed at https://web.whatsapp.com, and provides the
+same features that can be experienced there.
+
+
+## Development
+
+Follow the steps above and re-build the application after any changes. Here are some useful links
+to get started.
+
+- [Building your first Flatpak, flatpak.org](https://docs.flatpak.org/en/latest/first-build.html)
+- [QtWebEngine BaseApp](https://github.com/flathub/io.qt.qtwebengine.BaseApp)
+- [Qt WebEngine, qt.io](https://doc.qt.io/qt-6/qtwebengine-index.html)
+- [Qt WebView, qt.io](https://doc.qt.io/qt-6/qtwebview-index.html)
+- [Bug: qt.qpa.xcb: could not connect to display](https://github.com/flatpak/flatpak/issues/5448#issuecomment-1721703481)
+(a very important comment that helped considerably and requires more consideration!)
+
+
+## Acknowledgements
+
+- Original application by [Tristan Lins](https://github.com/tristanlins).
+- Icon by Teguh Sulistio https://www.iconfinder.com/VISOEALE
+
+
+## Contact
+
+Please contact the owner of this repository with any questions. Note that no support is provided
+with this application.
