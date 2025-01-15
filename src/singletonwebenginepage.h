@@ -4,12 +4,11 @@
 #include <QWebEnginePage>
 
 
-
 class SingletonWebEnginePage : public QWebEnginePage
 {
     Q_OBJECT
 public:
-    SingletonWebEnginePage(QWidget *parent = nullptr);
+    SingletonWebEnginePage(QObject *parent = nullptr);
 
 protected:
     bool acceptNavigationRequest(const QUrl &url, QWebEnginePage::NavigationType type, bool isMainFrame) override;

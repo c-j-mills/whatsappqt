@@ -22,12 +22,7 @@ That may be too restrictive for most. To grant access to your home directory, ov
 
 ## Local development
 
-### Installing dependencies
-
-It is recommend to use the *flatpak user mode* installation method.
-In this mode the packages are installed into user space, without affecting the system.
-
-#### flatpak user mode
+It is recommend to use the Flatpak *user mode* installation method. In this mode the packages are installed into user space, without affecting the system.
 
 Add Flathub remote:
 
@@ -37,13 +32,13 @@ Install required packages:
 
     flatpak install --user --assumeyes flathub org.kde.Platform//5.15 org.kde.Sdk//5.15 io.qt.qtwebengine.BaseApp//5.15
 
-#### flatpak system mode
+### flatpak system mode
+
+Alternatively, the Flatpak *system mode* can be used.
 
     sudo flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
 
-    sudo flatpak install --assumeyes flathub org.kde.Platform//5.15 org.kde.Sdk//5.15 io.qt.qtwebengine.BaseApp//5.15
-
-#### qt5 packages
+### qt5 packages
 
 For local code completion / assistance. Not needed for compiling!
 

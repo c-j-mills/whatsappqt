@@ -1,13 +1,13 @@
 #include <QApplication>
 #include <QtWidgets>
-#include <QtWebEngine>
+//#include <QtWebView>
 #include <QWebEngineProfile>
 
 #include "mainwindow.h"
 
 int main(int argc, char *argv[])
 {
-    QtWebEngine::initialize();
+//QtWebView::initialize();
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
     QApplication app(argc, argv);

@@ -1,4 +1,4 @@
-QT += core widgets webengine webenginewidgets
+QT += widgets core5compat webenginecore webenginewidgets 
 
 CONFIG += c++11 console
 

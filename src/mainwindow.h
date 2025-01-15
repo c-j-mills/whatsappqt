@@ -51,7 +51,7 @@ public slots:
     void handleWebViewTitleChanged(QString title);
     void handleLoadStarted();
     void handleLoadProgress(int progress);
-    void handleDownloadRequested(QWebEngineDownloadItem *download);
+    void handleDownloadRequested(QWebEngineDownloadRequest *download);
     void iconActivated(QSystemTrayIcon::ActivationReason reason);
     void messageClicked();
     void doReload();

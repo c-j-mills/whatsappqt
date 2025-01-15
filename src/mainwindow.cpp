@@ -213,7 +213,7 @@ void MainWindow::handleLoadProgress(int progress)
     }
 }
 
-void MainWindow::handleDownloadRequested(QWebEngineDownloadItem *download)
+void MainWindow::handleDownloadRequested(QWebEngineDownloadRequest *download)
 {
     QFileDialog dialog;
     dialog.setAcceptMode(QFileDialog::AcceptMode::AcceptSave);

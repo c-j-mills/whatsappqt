@@ -2,7 +2,7 @@
 
 #include <QDesktopServices>
 
-SingletonWebEnginePage::SingletonWebEnginePage(QWidget *parent)
+SingletonWebEnginePage::SingletonWebEnginePage(QObject *parent)
     : QWebEnginePage(parent)
 {
     // Connect signals and slots
@@ -14,7 +14,7 @@ SingletonWebEnginePage::SingletonWebEnginePage(QWidget *parent)
 
 bool SingletonWebEnginePage::acceptNavigationRequest(const QUrl &url, QWebEnginePage::NavigationType type, bool isMainFrame)
 {
-    qDebug() << "Navigation request: [" + url.toDisplayString() + "] " + type;
+    qDebug() << "Navigation request: [" + url.toDisplayString() + "] " + QVariant(type).toString();
 
     if (QWebEnginePage::NavigationType::NavigationTypeLinkClicked == type)
     {
