@@ -34,7 +34,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(QWebEngineProfile::defaultProfile(), &QWebEngineProfile::downloadRequested,
             this, &MainWindow::handleDownloadRequested);
 
-    showOutOfMaintenance();
+    // showOutOfMaintenance();
 }
 
 void MainWindow::readSettings()
