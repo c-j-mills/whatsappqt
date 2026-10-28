@@ -49,7 +49,7 @@ void SingletonWebEnginePage::handlePermissionRequested(const QWebEnginePermissio
     if (permission.permissionType() == QWebEnginePermission::PermissionType::Notifications ||
         permission.permissionType() == QWebEnginePermission::PermissionType::MediaAudioCapture ||
         permission.permissionType() == QWebEnginePermission::PermissionType::MediaVideoCapture ||
-        permission.permissionType() == QWebEnginePermission::PermissionType::ClipboardRead)
+        permission.permissionType() == QWebEnginePermission::PermissionType::ClipboardReadWrite)
     {
         permission.grant();
     }
