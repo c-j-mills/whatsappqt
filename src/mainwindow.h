@@ -8,7 +8,8 @@
 #include <QIcon>
 #include <QMenu>
 #include <QSystemTrayIcon>
-#include <QRegExp>
+#include <QRegularExpression
+#include <QWebEngineDownloadRequest>
 
 class MainWindow : public QMainWindow
 {
@@ -25,7 +26,7 @@ private:
     void createTrayIcon();
     void createWebEngine();
 
-    QRegExp notificationsTitleRegExp;
+    QRegularExpression notificationsTitleRegExp;
     QIcon trayIconRead;
     QIcon trayIconUnread;
 

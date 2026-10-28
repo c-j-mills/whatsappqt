@@ -6,6 +6,7 @@
 #include <QWebEngineProfile>
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QWebEngineDownloadRequest>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent),
@@ -111,14 +112,11 @@ void MainWindow::createActions()
     aboutAction = new QAction(tr("About"), this);
     connect(aboutAction, &QAction::triggered, this, &MainWindow::showAbout);
 
-    aboutAction = new QAction(tr("About"), this);
-    connect(aboutAction, &QAction::triggered, this, &MainWindow::showAbout);
-
     aboutQtAction = new QAction(tr("About QT"), this);
     connect(aboutQtAction, &QAction::triggered, this, &MainWindow::showAboutQt);
 
     quitAction = new QAction(tr("&Quit"), this);
-    quitAction->setShortcut(QKeySequence(Qt::Modifier::CTRL + Qt::Key_Q));
+    quitAction->setShortcut(QKeySequence::Quit);
     connect(quitAction, &QAction::triggered, qApp, &QCoreApplication::quit);
     addAction(quitAction);
 }
@@ -184,7 +182,7 @@ void MainWindow::createWebEngine()
 void MainWindow::handleWebViewTitleChanged(QString title) {
     setWindowTitle(title);
 
-    if (notificationsTitleRegExp.exactMatch(title))
+    if (notificationsTitleRegExp.match(title).hasMatch())
     {
         trayIcon->setIcon(trayIconUnread);
     }

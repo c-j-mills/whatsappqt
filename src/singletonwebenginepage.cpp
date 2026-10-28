@@ -14,10 +14,17 @@ SingletonWebEnginePage::SingletonWebEnginePage(QObject *parent)
 
 bool SingletonWebEnginePage::acceptNavigationRequest(const QUrl &url, QWebEnginePage::NavigationType type, bool isMainFrame)
 {
-    qDebug() << "Navigation request: [" + url.toDisplayString() + "] " + QVariant(type).toString();
+    qDebug() << "Navigation request: [" + url.toDisplayString() + "] " + QVariant::fromValue(type).toString();
 
-    if (QWebEnginePage::NavigationType::NavigationTypeLinkClicked == type)
+    if (type == QWebEnginePage::NavigationTypeLinkClicked)
     {
+        // Allow WhatsApp Web to handle its own internal links
+        if (url.host() == "web.whatsapp.com" || url.host().endsWith(".whatsapp.com"))
+        {
+            return true;
+        }
+
+        // Open external links (e.g. links sent in chat messages) in the system default browser
         QDesktopServices::openUrl(url);
         return false;
     }
@@ -25,9 +32,20 @@ bool SingletonWebEnginePage::acceptNavigationRequest(const QUrl &url, QWebEngine
     return QWebEnginePage::acceptNavigationRequest(url, type, isMainFrame);
 }
 
+
 QWebEnginePage *SingletonWebEnginePage::createWindow(QWebEnginePage::WebWindowType type)
 {
-    return new SingletonWebEnginePage();
+    // Create a temporary page to catch the requested popup URL
+    QWebEnginePage *popupPage = new QWebEnginePage(this);
+
+    connect(popupPage, &QWebEnginePage::urlChanged, this, [popupPage](const QUrl &url) {
+        if (!url.isEmpty() && url.isValid()) {
+            QDesktopServices::openUrl(url);
+        }
+        popupPage->deleteLater();
+    });
+
+    return popupPage;
 }
 
 void SingletonWebEnginePage::handleFeaturePermissionRequested(const QUrl &securityOrigin, QWebEnginePage::Feature feature)
