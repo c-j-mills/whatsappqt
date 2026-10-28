@@ -32,7 +32,7 @@ MainWindow::MainWindow(QWidget *parent)
             this, &MainWindow::handleLoadStarted);
     connect(webEngine, &QWebEngineView::loadProgress,
             this, &MainWindow::handleLoadProgress);
-    connect(QWebEngineProfile::defaultProfile(), &QWebEngineProfile::downloadRequested,
+    connect(webEngine->page()->profile(), &QWebEngineProfile::downloadRequested,
             this, &MainWindow::handleDownloadRequested);
 
     // showOutOfMaintenance();
@@ -174,8 +174,20 @@ void MainWindow::createWebEngine()
     webEngine->show();
     this->webEngine = webEngine;
 
-    // Explicitly pass the persistent default profile to the custom page
-    QWebEnginePage *page = new SingletonWebEnginePage(QWebEngineProfile::defaultProfile(), webEngine);
+    // Retrieve our persistent named profile
+    QWebEngineProfile *profile = nullptr;
+    const auto topObjects = qApp->children();
+    for (QObject *child : topObjects) {
+        if (auto p = qobject_cast<QWebEngineProfile*>(child)) {
+            profile = p;
+            break;
+        }
+    }
+    if (!profile) {
+        profile = new QWebEngineProfile("whatsappqt_profile", this);
+    }
+
+    QWebEnginePage *page = new SingletonWebEnginePage(profile, webEngine);
     webEngine->setPage(page);
     page->setUrl(QUrl("https://web.whatsapp.com/"));
 }
