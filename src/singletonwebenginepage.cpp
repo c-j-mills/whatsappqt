@@ -1,30 +1,27 @@
 #include "singletonwebenginepage.h"
 
 #include <QDesktopServices>
+#include <QWebEngineProfile>
 
 SingletonWebEnginePage::SingletonWebEnginePage(QObject *parent)
-    : QWebEnginePage(parent)
+: QWebEnginePage(parent)
 {
-    // Connect signals and slots
-    connect(this, &QWebEnginePage::featurePermissionRequested,
-            this, &SingletonWebEnginePage::handleFeaturePermissionRequested);
+    // Connect new permission signal
+    connect(this, &QWebEnginePage::permissionRequested,
+            this, &SingletonWebEnginePage::handlePermissionRequested);
     connect(this, &QWebEnginePage::loadFinished,
             this, &SingletonWebEnginePage::handleLoadFinished);
 }
 
 bool SingletonWebEnginePage::acceptNavigationRequest(const QUrl &url, QWebEnginePage::NavigationType type, bool isMainFrame)
 {
-    qDebug() << "Navigation request: [" + url.toDisplayString() + "] " + QVariant::fromValue(type).toString();
-
     if (type == QWebEnginePage::NavigationTypeLinkClicked)
     {
-        // Allow WhatsApp Web to handle its own internal links
         if (url.host() == "web.whatsapp.com" || url.host().endsWith(".whatsapp.com"))
         {
             return true;
         }
 
-        // Open external links (e.g. links sent in chat messages) in the system default browser
         QDesktopServices::openUrl(url);
         return false;
     }
@@ -32,12 +29,11 @@ bool SingletonWebEnginePage::acceptNavigationRequest(const QUrl &url, QWebEngine
     return QWebEnginePage::acceptNavigationRequest(url, type, isMainFrame);
 }
 
-
 QWebEnginePage *SingletonWebEnginePage::createWindow(QWebEnginePage::WebWindowType type)
 {
-    // Create a temporary page to catch the requested popup URL
-    QWebEnginePage *popupPage = new QWebEnginePage(this);
+    Q_UNUSED(type);
 
+    QWebEnginePage *popupPage = new QWebEnginePage(this);
     connect(popupPage, &QWebEnginePage::urlChanged, this, [popupPage](const QUrl &url) {
         if (!url.isEmpty() && url.isValid()) {
             QDesktopServices::openUrl(url);
@@ -48,23 +44,26 @@ QWebEnginePage *SingletonWebEnginePage::createWindow(QWebEnginePage::WebWindowTy
     return popupPage;
 }
 
-void SingletonWebEnginePage::handleFeaturePermissionRequested(const QUrl &securityOrigin, QWebEnginePage::Feature feature)
+void SingletonWebEnginePage::handlePermissionRequested(const QWebEnginePermission &permission)
 {
-    if (QWebEnginePage::Feature::Notifications == feature)
+    if (permission.permissionType() == QWebEnginePermission::PermissionType::Notifications)
     {
-        setFeaturePermission(
-                    securityOrigin,
-                    feature,
-                    QWebEnginePage::PermissionPolicy::PermissionGrantedByUser
-        );
+        permission.grant();
     }
 }
 
 void SingletonWebEnginePage::handleLoadFinished(bool ok)
 {
-    setFeaturePermission(
-                QUrl("https://web.whatsapp.com/"),
-                QWebEnginePage::Feature::Notifications,
-                QWebEnginePage::PermissionPolicy::PermissionGrantedByUser
+    Q_UNUSED(ok);
+
+    // Pre-grant notifications for WhatsApp Web using modern API
+    QWebEnginePermission permission = profile()->queryPermission(
+        QUrl("https://web.whatsapp.com/"),
+                                                                 QWebEnginePermission::PermissionType::Notifications
     );
+
+    if (permission.state() != QWebEnginePermission::State::Granted)
+    {
+        permission.grant();
+    }
 }

@@ -8,7 +8,7 @@
 #include <QIcon>
 #include <QMenu>
 #include <QSystemTrayIcon>
-#include <QRegularExpression
+#include <QRegularExpression>
 #include <QWebEngineDownloadRequest>
 
 class MainWindow : public QMainWindow

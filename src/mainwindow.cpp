@@ -228,6 +228,8 @@ void MainWindow::handleDownloadRequested(QWebEngineDownloadRequest *download)
 
 void MainWindow::iconActivated(QSystemTrayIcon::ActivationReason reason)
 {
+    Q_UNUSED(reason);
+
     if (isVisible()) {
         hide();
     } else {
