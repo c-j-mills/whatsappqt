@@ -46,11 +46,10 @@ QWebEnginePage *SingletonWebEnginePage::createWindow(QWebEnginePage::WebWindowTy
 
 void SingletonWebEnginePage::handlePermissionRequested(const QWebEnginePermission &permission)
 {
-    // Auto-grant permissions requested by WhatsApp (Notifications, AudioCapture, etc.)
     if (permission.permissionType() == QWebEnginePermission::PermissionType::Notifications ||
-        permission.permissionType() == QWebEnginePermission::PermissionType::AudioCapture ||
-        permission.permissionType() == QWebEnginePermission::PermissionType::VideoCapture ||
-        permission.permissionType() == QWebEnginePermission::PermissionType::ClipboardReadWrite)
+        permission.permissionType() == QWebEnginePermission::PermissionType::MediaAudioCapture ||
+        permission.permissionType() == QWebEnginePermission::PermissionType::MediaVideoCapture ||
+        permission.permissionType() == QWebEnginePermission::PermissionType::ClipboardRead)
     {
         permission.grant();
     }
