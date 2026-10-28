@@ -46,8 +46,11 @@ QWebEnginePage *SingletonWebEnginePage::createWindow(QWebEnginePage::WebWindowTy
 
 void SingletonWebEnginePage::handlePermissionRequested(const QWebEnginePermission &permission)
 {
+    // Auto-grant permissions requested by WhatsApp (Notifications, AudioCapture, etc.)
     if (permission.permissionType() == QWebEnginePermission::PermissionType::Notifications ||
-        permission.permissionType() == QWebEnginePermission::PermissionType::PersistentStorage)
+        permission.permissionType() == QWebEnginePermission::PermissionType::AudioCapture ||
+        permission.permissionType() == QWebEnginePermission::PermissionType::VideoCapture ||
+        permission.permissionType() == QWebEnginePermission::PermissionType::ClipboardReadWrite)
     {
         permission.grant();
     }
@@ -66,14 +69,5 @@ void SingletonWebEnginePage::handleLoadFinished(bool ok)
     );
     if (notifPermission.state() != QWebEnginePermission::State::Granted) {
         notifPermission.grant();
-    }
-
-    // Grant Persistent Storage
-    QWebEnginePermission storagePermission = profile()->queryPermission(
-        origin,
-        QWebEnginePermission::PermissionType::PersistentStorage
-    );
-    if (storagePermission.state() != QWebEnginePermission::State::Granted) {
-        storagePermission.grant();
     }
 }
