@@ -6,16 +6,18 @@ base: io.qt.qtwebengine.BaseApp
 base-version: '6.10'
 command: WhatsAppQT
 finish-args:
-- "--share=ipc"
-- "--socket=wayland"
-- "--socket=pulseaudio"
-- "--share=network"
-- "--filesystem=xdg-download"
-- "--device=dri"
-- "--env=QTWEBENGINEPROCESS_PATH=/app/bin/QtWebEngineProcess"
-- "--env=QT_QPA_PLATFORM=wayland"
-- "--talk-name=org.kde.StatusNotifierWatcher"
-- "--own-name=org.kde.*"
+  - "--share=ipc"
+  - "--socket=wayland"
+  - "--socket=fallback-x11"
+  - "--socket=pulseaudio"
+  - "--share=network"
+  - "--filesystem=xdg-download"
+  - "--device=dri"
+  - "--device=all"                  # Allows camera / microphone access for calls
+  - "--system-talk-name=org.freedesktop.NetworkManager" # Silences D-Bus system queries
+  - "--env=QTWEBENGINEPROCESS_PATH=/app/bin/QtWebEngineProcess"
+  - "--talk-name=org.kde.StatusNotifierWatcher"
+  - "--own-name=org.kde.*"
 cleanup-commands:
 - /app/cleanup-BaseApp.sh
 modules:

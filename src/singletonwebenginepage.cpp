@@ -46,7 +46,8 @@ QWebEnginePage *SingletonWebEnginePage::createWindow(QWebEnginePage::WebWindowTy
 
 void SingletonWebEnginePage::handlePermissionRequested(const QWebEnginePermission &permission)
 {
-    if (permission.permissionType() == QWebEnginePermission::PermissionType::Notifications)
+    if (permission.permissionType() == QWebEnginePermission::PermissionType::Notifications ||
+        permission.permissionType() == QWebEnginePermission::PermissionType::PersistentStorage)
     {
         permission.grant();
     }
@@ -56,14 +57,23 @@ void SingletonWebEnginePage::handleLoadFinished(bool ok)
 {
     Q_UNUSED(ok);
 
-    // Pre-grant notifications for WhatsApp Web using modern API
-    QWebEnginePermission permission = profile()->queryPermission(
-        QUrl("https://web.whatsapp.com/"),
-                                                                 QWebEnginePermission::PermissionType::Notifications
-    );
+    QUrl origin("https://web.whatsapp.com/");
 
-    if (permission.state() != QWebEnginePermission::State::Granted)
-    {
-        permission.grant();
+    // Grant Notifications
+    QWebEnginePermission notifPermission = profile()->queryPermission(
+        origin,
+        QWebEnginePermission::PermissionType::Notifications
+    );
+    if (notifPermission.state() != QWebEnginePermission::State::Granted) {
+        notifPermission.grant();
+    }
+
+    // Grant Persistent Storage
+    QWebEnginePermission storagePermission = profile()->queryPermission(
+        origin,
+        QWebEnginePermission::PermissionType::PersistentStorage
+    );
+    if (storagePermission.state() != QWebEnginePermission::State::Granted) {
+        storagePermission.grant();
     }
 }
