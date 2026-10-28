@@ -174,7 +174,8 @@ void MainWindow::createWebEngine()
     webEngine->show();
     this->webEngine = webEngine;
 
-    QWebEnginePage *page = new SingletonWebEnginePage(webEngine);
+    // Explicitly pass the persistent default profile to the custom page
+    QWebEnginePage *page = new SingletonWebEnginePage(QWebEngineProfile::defaultProfile(), webEngine);
     webEngine->setPage(page);
     page->setUrl(QUrl("https://web.whatsapp.com/"));
 }

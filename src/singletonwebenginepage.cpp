@@ -4,9 +4,13 @@
 #include <QWebEngineProfile>
 
 SingletonWebEnginePage::SingletonWebEnginePage(QObject *parent)
-: QWebEnginePage(parent)
+: SingletonWebEnginePage(QWebEngineProfile::defaultProfile(), parent)
 {
-    // Connect new permission signal
+}
+
+SingletonWebEnginePage::SingletonWebEnginePage(QWebEngineProfile *profile, QObject *parent)
+: QWebEnginePage(profile, parent)
+{
     connect(this, &QWebEnginePage::permissionRequested,
             this, &SingletonWebEnginePage::handlePermissionRequested);
     connect(this, &QWebEnginePage::loadFinished,

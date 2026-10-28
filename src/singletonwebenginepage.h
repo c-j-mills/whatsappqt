@@ -8,6 +8,7 @@ class SingletonWebEnginePage : public QWebEnginePage
 {
     Q_OBJECT
 public:
+    explicit SingletonWebEnginePage(QWebEngineProfile *profile, QObject *parent = nullptr);
     explicit SingletonWebEnginePage(QObject *parent = nullptr);
 
 protected:
