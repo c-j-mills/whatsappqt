@@ -6,6 +6,7 @@
 #include <QWebEngineProfile>
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QWebEngineDownloadRequest>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent),
@@ -31,7 +32,7 @@ MainWindow::MainWindow(QWidget *parent)
             this, &MainWindow::handleLoadStarted);
     connect(webEngine, &QWebEngineView::loadProgress,
             this, &MainWindow::handleLoadProgress);
-    connect(QWebEngineProfile::defaultProfile(), &QWebEngineProfile::downloadRequested,
+    connect(webEngine->page()->profile(), &QWebEngineProfile::downloadRequested,
             this, &MainWindow::handleDownloadRequested);
 
     // showOutOfMaintenance();
@@ -111,14 +112,11 @@ void MainWindow::createActions()
     aboutAction = new QAction(tr("About"), this);
     connect(aboutAction, &QAction::triggered, this, &MainWindow::showAbout);
 
-    aboutAction = new QAction(tr("About"), this);
-    connect(aboutAction, &QAction::triggered, this, &MainWindow::showAbout);
-
     aboutQtAction = new QAction(tr("About QT"), this);
     connect(aboutQtAction, &QAction::triggered, this, &MainWindow::showAboutQt);
 
     quitAction = new QAction(tr("&Quit"), this);
-    quitAction->setShortcut(QKeySequence(Qt::Modifier::CTRL + Qt::Key_Q));
+    quitAction->setShortcut(QKeySequence::Quit);
     connect(quitAction, &QAction::triggered, qApp, &QCoreApplication::quit);
     addAction(quitAction);
 }
@@ -176,7 +174,20 @@ void MainWindow::createWebEngine()
     webEngine->show();
     this->webEngine = webEngine;
 
-    QWebEnginePage *page = new SingletonWebEnginePage(webEngine);
+    // Retrieve our persistent named profile
+    QWebEngineProfile *profile = nullptr;
+    const auto topObjects = qApp->children();
+    for (QObject *child : topObjects) {
+        if (auto p = qobject_cast<QWebEngineProfile*>(child)) {
+            profile = p;
+            break;
+        }
+    }
+    if (!profile) {
+        profile = new QWebEngineProfile("whatsappqt_profile", this);
+    }
+
+    QWebEnginePage *page = new SingletonWebEnginePage(profile, webEngine);
     webEngine->setPage(page);
     page->setUrl(QUrl("https://web.whatsapp.com/"));
 }
@@ -184,7 +195,7 @@ void MainWindow::createWebEngine()
 void MainWindow::handleWebViewTitleChanged(QString title) {
     setWindowTitle(title);
 
-    if (notificationsTitleRegExp.exactMatch(title))
+    if (notificationsTitleRegExp.match(title).hasMatch())
     {
         trayIcon->setIcon(trayIconUnread);
     }
@@ -230,6 +241,8 @@ void MainWindow::handleDownloadRequested(QWebEngineDownloadRequest *download)
 
 void MainWindow::iconActivated(QSystemTrayIcon::ActivationReason reason)
 {
+    Q_UNUSED(reason);
+
     if (isVisible()) {
         hide();
     } else {

@@ -1,23 +1,31 @@
 #include "singletonwebenginepage.h"
 
 #include <QDesktopServices>
+#include <QWebEngineProfile>
 
 SingletonWebEnginePage::SingletonWebEnginePage(QObject *parent)
-    : QWebEnginePage(parent)
+: SingletonWebEnginePage(QWebEngineProfile::defaultProfile(), parent)
 {
-    // Connect signals and slots
-    connect(this, &QWebEnginePage::featurePermissionRequested,
-            this, &SingletonWebEnginePage::handleFeaturePermissionRequested);
+}
+
+SingletonWebEnginePage::SingletonWebEnginePage(QWebEngineProfile *profile, QObject *parent)
+: QWebEnginePage(profile, parent)
+{
+    connect(this, &QWebEnginePage::permissionRequested,
+            this, &SingletonWebEnginePage::handlePermissionRequested);
     connect(this, &QWebEnginePage::loadFinished,
             this, &SingletonWebEnginePage::handleLoadFinished);
 }
 
 bool SingletonWebEnginePage::acceptNavigationRequest(const QUrl &url, QWebEnginePage::NavigationType type, bool isMainFrame)
 {
-    qDebug() << "Navigation request: [" + url.toDisplayString() + "] " + QVariant(type).toString();
-
-    if (QWebEnginePage::NavigationType::NavigationTypeLinkClicked == type)
+    if (type == QWebEnginePage::NavigationTypeLinkClicked)
     {
+        if (url.host() == "web.whatsapp.com" || url.host().endsWith(".whatsapp.com"))
+        {
+            return true;
+        }
+
         QDesktopServices::openUrl(url);
         return false;
     }
@@ -27,26 +35,42 @@ bool SingletonWebEnginePage::acceptNavigationRequest(const QUrl &url, QWebEngine
 
 QWebEnginePage *SingletonWebEnginePage::createWindow(QWebEnginePage::WebWindowType type)
 {
-    return new SingletonWebEnginePage();
+    Q_UNUSED(type);
+
+    QWebEnginePage *popupPage = new QWebEnginePage(this);
+    connect(popupPage, &QWebEnginePage::urlChanged, this, [popupPage](const QUrl &url) {
+        if (!url.isEmpty() && url.isValid()) {
+            QDesktopServices::openUrl(url);
+        }
+        popupPage->deleteLater();
+    });
+
+    return popupPage;
 }
 
-void SingletonWebEnginePage::handleFeaturePermissionRequested(const QUrl &securityOrigin, QWebEnginePage::Feature feature)
+void SingletonWebEnginePage::handlePermissionRequested(const QWebEnginePermission &permission)
 {
-    if (QWebEnginePage::Feature::Notifications == feature)
+    if (permission.permissionType() == QWebEnginePermission::PermissionType::Notifications ||
+        permission.permissionType() == QWebEnginePermission::PermissionType::MediaAudioCapture ||
+        permission.permissionType() == QWebEnginePermission::PermissionType::MediaVideoCapture ||
+        permission.permissionType() == QWebEnginePermission::PermissionType::ClipboardReadWrite)
     {
-        setFeaturePermission(
-                    securityOrigin,
-                    feature,
-                    QWebEnginePage::PermissionPolicy::PermissionGrantedByUser
-        );
+        permission.grant();
     }
 }
 
 void SingletonWebEnginePage::handleLoadFinished(bool ok)
 {
-    setFeaturePermission(
-                QUrl("https://web.whatsapp.com/"),
-                QWebEnginePage::Feature::Notifications,
-                QWebEnginePage::PermissionPolicy::PermissionGrantedByUser
+    Q_UNUSED(ok);
+
+    QUrl origin("https://web.whatsapp.com/");
+
+    // Grant Notifications
+    QWebEnginePermission notifPermission = profile()->queryPermission(
+        origin,
+        QWebEnginePermission::PermissionType::Notifications
     );
+    if (notifPermission.state() != QWebEnginePermission::State::Granted) {
+        notifPermission.grant();
+    }
 }
